@@ -276,6 +276,9 @@ function formatDate(dateStr) {
   return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 }
 
+// ── AGENT SYSTEM (registry, router, Approval Queue, UI pages) ──
+require('./routes/agents')(app, express);
+
 app.listen(PORT, () => {
   console.log(`\n🔴 EMINENT INTELLIGENCE BACKEND ONLINE`);
   console.log(`   Port: ${PORT}`);

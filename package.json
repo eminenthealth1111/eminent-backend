@@ -5,7 +5,9 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "prompts": "node scripts/generate-prompts.js",
+    "verify": "node scripts/verify.js"
   },
   "engines": {
     "node": ">=18.0.0"

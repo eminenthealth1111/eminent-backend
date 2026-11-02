@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Command Center</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header><div class="brand">EMINENT INTELLIGENCE</div><nav id="nav"></nav></header>
+<main>
+  <div id="msg" class="msg"></div>
+  <h2>Master Outbound Switch</h2>
+  <div class="row"><span id="switch" class="pill">loading</span><button id="toggle" class="ghost">Flip switch</button></div>
+  <div class="sub">OFF stops everything outbound and blocks approvals. Only Aalia holds the admin token.</div>
+  <h2>Approval Queue</h2>
+  <table><thead><tr><th>When</th><th>Agent</th><th>Type</th><th>Command</th><th>Status</th><th></th></tr></thead><tbody id="queue"></tbody></table>
+</main>
+<script src="app.js"></script>
+<script>
+nav('command-center.html');
+let enabled = true;
+
+async function loadSwitch() {
+  const r = await api('/api/outbound-switch');
+  if (!r.ok) { document.getElementById('msg').textContent = r.data.error || 'Could not load'; return; }
+  enabled = r.data.outboundEnabled;
+  const el = document.getElementById('switch');
+  el.textContent = enabled ? 'OUTBOUND ON (queue only)' : 'OUTBOUND OFF';
+  el.className = 'pill ' + (enabled ? 'ok' : 'bad');
+}
+
+async function loadQueue() {
+  const r = await api('/api/approvals');
+  if (!r.ok) return;
+  const rows = r.data.slice().reverse();
+  document.getElementById('queue').innerHTML = rows.length ? rows.map((i) => `
+    <tr><td>${esc(new Date(i.createdAt).toLocaleString())}</td><td>${esc(i.agentId)}</td><td>${esc(i.type)}</td><td>${esc(i.command)}</td><td>${esc(i.status)}</td>
+    <td>${i.status === 'pending' ? `<button data-id="${esc(i.id)}" data-act="approve">Approve</button> <button class="ghost" data-id="${esc(i.id)}" data-act="reject">Reject</button>` : ''}</td></tr>`).join('')
+    : '<tr><td colspan="6" class="sub">Queue is empty.</td></tr>';
+}
+
+document.getElementById('queue').onclick = async (e) => {
+  const b = e.target.closest('button[data-id]');
+  if (!b) return;
+  const r = await api(`/api/approvals/${encodeURIComponent(b.dataset.id)}/${b.dataset.act}`, { method: 'POST' });
+  document.getElementById('msg').textContent = r.ok ? '' : (r.data.error || 'Failed');
+  loadQueue();
+};
+
+document.getElementById('toggle').onclick = async () => {
+  await api('/api/outbound-switch', { method: 'POST', body: { enabled: !enabled } });
+  loadSwitch();
+};
+
+loadSwitch(); loadQueue();
+</script></body></html>
