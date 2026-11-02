@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agent Roster</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header><div class="brand">EMINENT INTELLIGENCE</div><nav id="nav"></nav></header>
+<main>
+  <div id="msg" class="msg"></div>
+  <h2>Tier 1</h2><div id="owner" class="grid"></div>
+  <h2>Tier 2: Executive Council</h2><div id="council" class="grid"></div>
+  <h2>Tier 3: Agent Workforce</h2><div id="agents" class="grid"></div>
+</main>
+<script src="app.js"></script>
+<script>
+nav('roster.html');
+(async () => {
+  const r = await api('/api/agents');
+  if (!r.ok) { document.getElementById('msg').textContent = r.data.error || 'Could not load the registry'; return; }
+  const reg = r.data;
+  const owns = {};
+  reg.agents.forEach((a) => { (owns[a.owner] = owns[a.owner] || []).push(a.name); });
+
+  document.getElementById('owner').innerHTML = `<div class="card"><div class="top"><div class="avatar">AA</div><div><div class="name">${esc(reg.owner.name)}</div><div class="sub">${esc(reg.owner.credentials)}</div></div></div><div class="sub">${esc(reg.owner.title)}. Master outbound switch. No refund endpoint exists.</div></div>`;
+
+  document.getElementById('council').innerHTML = reg.council.map((c) => `
+    <div class="card"><div class="top">${avatar(c)}<div><div class="name">${esc(c.name)}</div><div class="sub">${esc(c.title)}</div></div></div>
+    <div class="sub">Owns: ${esc((owns[c.id] || []).join(', ') || 'no agents assigned yet')}</div>
+    <div style="margin-top:8px"><span class="pill ${c.photoFound ? 'ok' : 'warn'}">${c.photoFound ? 'photo' : 'photo missing'}</span></div></div>`).join('');
+
+  const seat = (id) => (reg.council.find((c) => c.id === id) || { name: reg.owner.name }).name;
+  document.getElementById('agents').innerHTML = reg.agents.map((a) => `
+    <div class="card"><div class="top">${avatar(a)}<div><div class="name">${esc(a.name)}</div><div class="sub">${esc(a.role)}</div></div></div>
+    <div class="sub">${esc(a.division)}<br>Owner: ${esc(seat(a.owner))}</div>
+    <div style="margin-top:8px"><span class="pill warn">${esc(a.status)}</span><span class="pill ${a.photoFound ? 'ok' : 'warn'}">${a.photoFound ? 'photo' : 'photo missing'}</span><span class="pill ${a.promptFound ? 'ok' : 'bad'}">${a.promptFound ? 'prompt' : 'prompt missing'}</span></div></div>`).join('');
+})();
+</script></body></html>

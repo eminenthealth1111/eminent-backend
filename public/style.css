@@ -1,0 +1,29 @@
+:root { --bg:#0A0A0A; --panel:#141414; --line:#2a2a2a; --red:#CC0000; --text:#f2f2f2; --mute:#8a8a8a; --ok:#2e9e5b; --warn:#d9a21b; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font-family:Georgia, serif; }
+header { padding:16px 24px; border-bottom:1px solid var(--line); display:flex; gap:24px; align-items:center; flex-wrap:wrap; }
+header .brand { color:var(--red); letter-spacing:2px; font-weight:bold; }
+nav a { color:var(--mute); text-decoration:none; margin-right:16px; font-size:14px; }
+nav a.on, nav a:hover { color:var(--text); }
+main { padding:24px; max-width:1200px; margin:0 auto; }
+h2 { margin:24px 0 12px; font-size:15px; letter-spacing:2px; color:var(--red); text-transform:uppercase; }
+.grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:14px; }
+.card { background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:14px; }
+.card .top { display:flex; gap:12px; align-items:center; margin-bottom:8px; }
+.avatar { width:48px; height:48px; border-radius:50%; background:#222; border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--mute); overflow:hidden; flex:none; }
+.avatar img { width:100%; height:100%; object-fit:cover; }
+.name { font-weight:bold; }
+.sub { color:var(--mute); font-size:12px; line-height:1.5; }
+.pill { display:inline-block; font-size:11px; padding:2px 8px; border-radius:10px; border:1px solid var(--line); margin-right:6px; }
+.pill.ok { color:var(--ok); border-color:var(--ok); }
+.pill.warn { color:var(--warn); border-color:var(--warn); }
+.pill.bad { color:var(--red); border-color:var(--red); }
+input, select, textarea, button { background:#1b1b1b; color:var(--text); border:1px solid var(--line); border-radius:4px; padding:8px 10px; font:inherit; font-size:14px; }
+textarea { width:100%; min-height:80px; }
+button { cursor:pointer; background:var(--red); border-color:var(--red); }
+button.ghost { background:transparent; border-color:var(--line); }
+.row { display:flex; gap:10px; flex-wrap:wrap; margin:10px 0; align-items:center; }
+pre { background:#101010; border:1px solid var(--line); padding:12px; overflow:auto; border-radius:4px; font-size:12px; }
+.msg { color:var(--warn); font-size:13px; margin:8px 0; }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+th, td { text-align:left; padding:8px; border-bottom:1px solid var(--line); vertical-align:top; }

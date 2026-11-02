@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Command Router</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header><div class="brand">EMINENT INTELLIGENCE</div><nav id="nav"></nav></header>
+<main>
+  <h2>Command Router</h2>
+  <div class="sub">Pick an agent, or leave it on Auto to match by role. Anything outbound is held for Aalia. Nothing is sent from here.</div>
+  <div class="row"><select id="agent"><option value="">Auto (match by command)</option></select>
+    <select id="type"><option value="">Type: none</option><option>email</option><option>sms</option><option>call</option><option>post</option><option>publish</option><option>charge</option></select></div>
+  <textarea id="command" placeholder="Type the command"></textarea>
+  <div class="row"><button id="go">Route command</button></div>
+  <pre id="out">Waiting for a command.</pre>
+</main>
+<script src="app.js"></script>
+<script>
+nav('command-router.html');
+(async () => {
+  const r = await api('/api/agents');
+  if (r.ok) document.getElementById('agent').innerHTML += r.data.agents.map((a) => `<option value="${esc(a.id)}">${esc(a.name)}: ${esc(a.role)}</option>`).join('');
+})();
+document.getElementById('go').onclick = async () => {
+  const body = { command: document.getElementById('command').value };
+  if (document.getElementById('agent').value) body.agent = document.getElementById('agent').value;
+  if (document.getElementById('type').value) body.type = document.getElementById('type').value;
+  const r = await api('/api/command', { method: 'POST', body });
+  document.getElementById('out').textContent = `HTTP ${r.status}\n` + JSON.stringify(r.data, null, 2);
+};
+</script></body></html>
